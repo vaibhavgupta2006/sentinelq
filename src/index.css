@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0F172A;
+  --color-panel: #1E293B;
+  --color-panel-border: #334155;
+  
+  --color-accent-safe: #22C55E;
+  --color-accent-warning: #F59E0B;
+  --color-accent-danger: #EF4444;
+  --color-accent-neutral: #0EA5E9;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: #F8FAFC;
+  }
+}
