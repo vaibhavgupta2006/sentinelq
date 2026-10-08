@@ -1,11 +1,14 @@
 import { useMemo, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 import { useToastStore } from '../store/useToastStore';
-import { Activity, ShieldAlert, IndianRupee, Clock, Server, Zap, Database, ExternalLink, ShieldCheck, X, PlaySquare, RefreshCw, Download } from 'lucide-react';
+import { Activity, ShieldAlert, IndianRupee, Clock, Server, Zap, Database, ExternalLink, ShieldCheck, X, PlaySquare, RefreshCw, Download, ShieldOff } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useDemoScenario } from '../hooks/useDemoScenario';
 import { exportTransactionsCSV, generateForensicReportHTML, openPrintableReport } from '../services/exportService';
+import { FraudSimulationModal } from '../components/dashboard/FraudSimulationModal';
+import { SimulationStatusPanel } from '../components/dashboard/SimulationStatusPanel';
+import { useSimulationStore } from '../store/useSimulationStore';
 
 const formatINR = (amount: number) => {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
@@ -25,6 +28,8 @@ export const Dashboard = () => {
   const selectedTx = useStore(state => state.selectedTransaction);
   const setSelectedTx = useStore(state => state.setSelectedTransaction);
   const toast = useToastStore(s => s.push);
+  const openSimModal = useSimulationStore(s => s.openModal);
+  const simIsRunning = useSimulationStore(s => s.isRunning);
 
   // Derived Metrics
   const metrics = useMemo(() => {
@@ -113,12 +118,24 @@ export const Dashboard = () => {
             </h1>
             <p className="text-sm text-slate-400">Real-time monitoring of transaction risk, interception activity and network intelligence.</p>
           </div>
-          <button 
-            onClick={() => toggleStreamPause()}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded border border-panel-border transition-colors uppercase tracking-wider"
-          >
-            {isStreamPaused ? 'Resume Stream' : 'Pause Stream'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              id="simulate-fraud-btn"
+              onClick={openSimModal}
+              disabled={simIsRunning}
+              className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 text-xs font-semibold rounded border border-slate-600 transition-colors uppercase tracking-wider"
+              title="Open Fraud Simulation control panel"
+            >
+              <ShieldOff className="w-3.5 h-3.5 text-slate-400" />
+              {simIsRunning ? 'Simulation Running' : 'Simulate Fraud'}
+            </button>
+            <button 
+              onClick={() => toggleStreamPause()}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded border border-panel-border transition-colors uppercase tracking-wider"
+            >
+              {isStreamPaused ? 'Resume Stream' : 'Pause Stream'}
+            </button>
+          </div>
         </header>
 
         {/* Demo Mode Controls */}
@@ -399,6 +416,10 @@ export const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Simulation Modal and Status Panel */}
+      <FraudSimulationModal />
+      <SimulationStatusPanel />
     </div>
   );
 };
