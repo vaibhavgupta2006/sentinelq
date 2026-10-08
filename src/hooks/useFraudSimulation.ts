@@ -56,8 +56,6 @@ const speedToDelay = (speed: string): number => {
 };
 
 export const useFraudSimulation = () => {
-  const store = useStore.getState;
-  const sim = useSimulationStore.getState;
   const toast = useToastStore.getState().push;
 
   const abortRef = useRef(false);
