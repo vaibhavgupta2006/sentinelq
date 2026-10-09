@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Shield,
@@ -10,21 +11,97 @@ import {
   CheckCircle2,
   Zap,
   ShieldAlert,
-  ChevronDown
+  ChevronDown,
+  X,
+  GitFork,
+  FileText,
+  ShieldOff,
+  Cpu,
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
+
+interface CapabilityItem {
+  id: string;
+  title: string;
+  category: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  metrics: string;
+  route: string;
+}
+
+const PLATFORM_CAPABILITIES: CapabilityItem[] = [
+  {
+    id: 'stream',
+    title: 'High-Throughput Risk Engine',
+    category: 'Real-Time Ingestion',
+    icon: Activity,
+    description: 'Scans live multi-currency transaction streams with sub-50ms latency scoring and dynamic velocity thresholding.',
+    metrics: '< 42ms Average Latency · 12,450 TPS',
+    route: '/dashboard'
+  },
+  {
+    id: 'graph',
+    title: 'Graph Intelligence & Mule Ring Detection',
+    category: 'Topology Correlation',
+    icon: GitFork,
+    description: 'Discovers circular money flows, smurfing syndicates, and synthetic device associations across deep graph networks.',
+    metrics: 'Entity Centrality · Cycle Detection',
+    route: '/intelligence'
+  },
+  {
+    id: 'interception',
+    title: 'Pre-Settlement Interception Queue',
+    category: 'Active Blocking',
+    icon: Lock,
+    description: 'Intercepts anomalous transfers before fund clearance with instant SAR generation and automated operator escalation.',
+    metrics: 'Automated SAR Filing · Instant Block',
+    route: '/interceptions'
+  },
+  {
+    id: 'ledger',
+    title: 'SHA-256 Merkle Audit Ledger',
+    category: 'Immutable Compliance',
+    icon: Database,
+    description: 'Cryptographically chains all banking API decisions and investigator actions into a verifiable tamper-proof audit trail.',
+    metrics: '100% Tamper Proof · Zero-Knowledge Proof Ready',
+    route: '/ledger'
+  },
+  {
+    id: 'cases',
+    title: 'Forensic Case Briefs & Evidence Dossiers',
+    category: 'Analyst Intelligence',
+    icon: FileText,
+    description: 'Synthesizes complete multi-hop transaction histories, IP geolocations, and compliance summaries into exportable dossiers.',
+    metrics: 'Automated Briefs · Printable PDF Exports',
+    route: '/cases'
+  },
+  {
+    id: 'simulation',
+    title: 'Live Fraud Attack Simulator',
+    category: 'Scenario Testing',
+    icon: ShieldOff,
+    description: 'Generates 5 realistic synthetic fraud patterns to validate SentinelQ detection and automated mitigation live.',
+    metrics: 'Account Takeover · Velocity Attack · Smurfing',
+    route: '/dashboard'
+  }
+];
 
 export const Landing = () => {
   const navigate = useNavigate();
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+  const [capabilitiesModalOpen, setCapabilitiesModalOpen] = useState(false);
 
-  const handleEnterPlatform = () => {
-    navigate('/dashboard');
+  const handleEnterPlatform = (destination = '/dashboard') => {
+    navigate(destination);
   };
 
-  const handleScrollToFeatures = (e: React.MouseEvent) => {
+  const handleExploreCapabilities = (e: React.MouseEvent) => {
     e.preventDefault();
+    setCapabilitiesModalOpen(true);
     const el = document.getElementById('features');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -34,7 +111,7 @@ export const Landing = () => {
   return (
     <div className="min-h-screen bg-background text-slate-100 flex flex-col justify-between font-sans selection:bg-accent-neutral/30 transition-colors">
       {/* 1. Minimal Navigation Bar */}
-      <header className="w-full border-b border-panel-border bg-panel/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
+      <header className="w-full border-b border-panel-border bg-panel/80 backdrop-blur-md sticky top-0 z-40 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -64,7 +141,7 @@ export const Landing = () => {
             </button>
 
             <button
-              onClick={handleEnterPlatform}
+              onClick={() => handleEnterPlatform('/dashboard')}
               className="px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:text-slate-100 bg-slate-800/80 hover:bg-slate-700/80 border border-panel-border rounded transition-all shadow-sm flex items-center gap-1.5"
             >
               <span>Open Platform</span>
@@ -100,22 +177,23 @@ export const Landing = () => {
             {/* Call to Actions */}
             <div className="flex flex-wrap items-center gap-4">
               <button
-                onClick={handleEnterPlatform}
+                onClick={() => handleEnterPlatform('/dashboard')}
                 id="enter-platform-btn"
-                className="group px-6 py-3 bg-slate-100 hover:bg-white text-slate-950 font-semibold text-sm rounded border border-slate-200 transition-all shadow-md flex items-center gap-2"
+                className="group px-6 py-3 bg-slate-100 hover:bg-white text-slate-950 font-semibold text-sm rounded border border-slate-200 transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 <span>Enter Platform</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 text-slate-900" />
               </button>
 
-              <a
-                href="#features"
-                onClick={handleScrollToFeatures}
-                className="px-4 py-3 text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+              <button
+                id="explore-capabilities-btn"
+                onClick={handleExploreCapabilities}
+                className="px-4 py-3 text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 rounded transition-all flex items-center gap-1.5 cursor-pointer border border-transparent hover:border-panel-border"
               >
+                <Sparkles className="w-3.5 h-3.5 text-accent-neutral" />
                 <span>Explore capabilities</span>
-                <ChevronDown className="w-3.5 h-3.5" />
-              </a>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              </button>
             </div>
           </div>
 
@@ -232,13 +310,17 @@ export const Landing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-panel-border">
             {/* Feature 1 */}
-            <div className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4 first:pl-0">
-              <div className="p-2 rounded bg-slate-900 border border-panel-border text-accent-neutral shrink-0">
+            <div
+              onClick={() => handleEnterPlatform('/dashboard')}
+              className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4 first:pl-0 cursor-pointer group hover:bg-slate-800/20 p-2 rounded transition-colors"
+            >
+              <div className="p-2 rounded bg-slate-900 border border-panel-border text-accent-neutral shrink-0 group-hover:border-accent-neutral/50 transition-colors">
                 <Activity className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1">
                   Real-Time Monitoring
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent-neutral" />
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
                   Continuous transaction intelligence with sub-50ms latency scanning.
@@ -247,13 +329,17 @@ export const Landing = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4">
-              <div className="p-2 rounded bg-slate-900 border border-panel-border text-amber-400 shrink-0">
+            <div
+              onClick={() => handleEnterPlatform('/interceptions')}
+              className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4 cursor-pointer group hover:bg-slate-800/20 p-2 rounded transition-colors"
+            >
+              <div className="p-2 rounded bg-slate-900 border border-panel-border text-amber-400 shrink-0 group-hover:border-amber-400/50 transition-colors">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1">
                   Intelligent Interception
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-amber-400" />
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
                   Pre-settlement blocking rules and network topology correlation.
@@ -262,13 +348,17 @@ export const Landing = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4">
-              <div className="p-2 rounded bg-slate-900 border border-panel-border text-emerald-400 shrink-0">
+            <div
+              onClick={() => handleEnterPlatform('/ledger')}
+              className="flex items-start gap-3.5 pt-4 md:pt-0 md:px-4 cursor-pointer group hover:bg-slate-800/20 p-2 rounded transition-colors"
+            >
+              <div className="p-2 rounded bg-slate-900 border border-panel-border text-emerald-400 shrink-0 group-hover:border-emerald-400/50 transition-colors">
                 <Database className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1">
                   Audit-Ready Ledger
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400" />
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
                   Cryptographically chained immutable ledger for regulatory compliance.
@@ -290,6 +380,101 @@ export const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* 5. Capabilities Overview Modal */}
+      {capabilitiesModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-hero-fade"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setCapabilitiesModalOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="capabilities-title"
+        >
+          <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between p-5 border-b border-panel-border bg-slate-800/40">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-accent-neutral/10 border border-accent-neutral/30 rounded-lg text-accent-neutral">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 id="capabilities-title" className="text-base font-semibold text-slate-100">
+                    Platform Capabilities & Architecture
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Explore SentinelQ's integrated modules for real-time fraud mitigation.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCapabilitiesModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body: 6 Grid Tiles */}
+            <div className="p-5 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+              {PLATFORM_CAPABILITIES.map((cap) => {
+                const Icon = cap.icon;
+                return (
+                  <div
+                    key={cap.id}
+                    onClick={() => {
+                      setCapabilitiesModalOpen(false);
+                      handleEnterPlatform(cap.route);
+                    }}
+                    className="p-4 bg-slate-800/50 hover:bg-slate-800 border border-panel-border hover:border-slate-600 rounded-lg transition-all cursor-pointer flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 bg-slate-900 border border-panel-border rounded text-slate-200 group-hover:text-accent-neutral transition-colors">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                          {cap.category}
+                        </span>
+                      </div>
+                      <h3 className="text-xs font-bold text-slate-100 mb-1 group-hover:text-accent-neutral transition-colors flex items-center justify-between">
+                        {cap.title}
+                        <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </h3>
+                      <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                        {cap.description}
+                      </p>
+                    </div>
+                    <div className="pt-2 border-t border-panel-border/60 text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
+                      <Cpu className="w-3 h-3 text-slate-500" />
+                      <span>{cap.metrics}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-panel-border bg-slate-800/40 flex items-center justify-between">
+              <span className="text-xs text-slate-400">
+                Click any capability to launch directly in platform.
+              </span>
+              <button
+                onClick={() => {
+                  setCapabilitiesModalOpen(false);
+                  handleEnterPlatform('/dashboard');
+                }}
+                className="px-4 py-2 bg-slate-100 hover:bg-white text-slate-950 text-xs font-bold rounded transition-all flex items-center gap-1.5"
+              >
+                <span>Launch Full Platform</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
