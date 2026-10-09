@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import { Landing } from './pages/Landing';
 import { Dashboard } from './pages/Dashboard';
 import { Intelligence } from './pages/Intelligence';
 import { Interceptions } from './pages/Interceptions';
@@ -13,8 +14,8 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Landing />} />
+          <Route element={<AppLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="intelligence" element={<Intelligence />} />
             <Route path="interceptions" element={<Interceptions />} />
