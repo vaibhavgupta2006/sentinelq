@@ -9,6 +9,7 @@ import { exportTransactionsCSV, generateForensicReportHTML, openPrintableReport 
 import { FraudSimulationModal } from '../components/dashboard/FraudSimulationModal';
 import { SimulationStatusPanel } from '../components/dashboard/SimulationStatusPanel';
 import { useSimulationStore } from '../store/useSimulationStore';
+import { useThemeStore } from '../store/useThemeStore';
 
 const formatINR = (amount: number) => {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
@@ -30,6 +31,8 @@ export const Dashboard = () => {
   const toast = useToastStore(s => s.push);
   const openSimModal = useSimulationStore(s => s.openModal);
   const simIsRunning = useSimulationStore(s => s.isRunning);
+  const theme = useThemeStore(s => s.theme);
+  const isLight = theme === 'light';
 
   // Derived Metrics
   const metrics = useMemo(() => {
@@ -206,22 +209,29 @@ export const Dashboard = () => {
                 <AreaChart data={metrics.chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#334155" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#334155" stopOpacity={0}/>
+                      <stop offset="5%" stopColor={isLight ? '#CBD5E1' : '#334155'} stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor={isLight ? '#CBD5E1' : '#334155'} stopOpacity={0}/>
                     </linearGradient>
                     <linearGradient id="colorBlocked" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8}/>
                       <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                  <XAxis dataKey="time" stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#64748B" fontSize={10} tickLine={false} axisLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#E2E8F0' : '#334155'} vertical={false} />
+                  <XAxis dataKey="time" stroke={isLight ? '#94A3B8' : '#64748B'} fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke={isLight ? '#94A3B8' : '#64748B'} fontSize={10} tickLine={false} axisLine={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', fontSize: '12px', color: '#F8FAFC' }}
+                    contentStyle={{
+                      backgroundColor: isLight ? '#FFFFFF' : '#1E293B',
+                      borderColor: isLight ? '#E2E8F0' : '#334155',
+                      fontSize: '12px',
+                      color: isLight ? '#0F172A' : '#F8FAFC',
+                      borderRadius: '4px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
                     itemStyle={{ fontSize: '12px' }}
                   />
-                  <Area type="monotone" dataKey="Total" stroke="#94A3B8" fillOpacity={1} fill="url(#colorTotal)" />
+                  <Area type="monotone" dataKey="Total" stroke={isLight ? '#64748B' : '#94A3B8'} fillOpacity={1} fill="url(#colorTotal)" />
                   <Area type="monotone" dataKey="Blocked" stroke="#EF4444" fillOpacity={1} fill="url(#colorBlocked)" />
                 </AreaChart>
               </ResponsiveContainer>

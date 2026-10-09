@@ -6,10 +6,13 @@ import { generateMockNetwork } from '../data/networkMock';
 import { detectCircularFunding, calculateCentrality, findMuleClusters } from '../utils/graphAnalysis';
 import type { GraphNode, GraphEdge } from '../utils/graphAnalysis';
 import { ErrorBoundary } from '../components/ui/ErrorBoundary';
+import { useThemeStore } from '../store/useThemeStore';
 
 export const Intelligence = () => {
   const navigate = useNavigate();
   const graphRef = useRef<any>(null);
+  const theme = useThemeStore(s => s.theme);
+  const isLight = theme === 'light';
   
   const [graphData] = useState<{ nodes: GraphNode[], edges: GraphEdge[] }>(() => {
     const data = generateMockNetwork();
@@ -150,7 +153,7 @@ export const Intelligence = () => {
              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#EF4444]"></div> Critical / Fraud</div>
           </div>
 
-          <ErrorBoundary fallback={<div className="flex-1 flex items-center justify-center text-slate-500 bg-[#0F172A]">Graph failed to render due to invalid topology data.</div>}>
+          <ErrorBoundary fallback={<div className="flex-1 flex items-center justify-center text-slate-500 bg-background">Graph failed to render due to invalid topology data.</div>}>
             <ForceGraph2D
               ref={graphRef}
               width={dimensions.width}
@@ -159,10 +162,10 @@ export const Intelligence = () => {
               nodeLabel="label"
               nodeColor={getNodeColor}
               nodeRelSize={6}
-              linkColor={() => '#334155'}
+              linkColor={() => (isLight ? '#CBD5E1' : '#334155')}
               linkWidth={1.5}
               onNodeClick={handleNodeClick}
-              backgroundColor="#0F172A"
+              backgroundColor={isLight ? '#F8FAFC' : '#0F172A'}
             />
           </ErrorBoundary>
         </div>
